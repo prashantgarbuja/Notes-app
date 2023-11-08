@@ -2,7 +2,6 @@ import React from "react";
 import Sidebar from "./components/Sidebar";
 import Editor from "./components/Editor";
 import Split from "react-split";
-import { nanoid } from "nanoid";
 import { onSnapshot, addDoc, doc, deleteDoc, setDoc } from "firebase/firestore";
 import { notesCollection, db } from "./firebase";
 
@@ -36,14 +35,14 @@ export default function App() {
   }, [notes]);
 
   React.useEffect(() => {
-    if (currentNote) {
+    if (currentNote && currentNote.body) {
       setTempNoteText(currentNote.body);
     }
   }, [currentNote]);
 
   React.useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (tempNoteText !== currentNote.body) {
+      if (currentNote && tempNoteText !== currentNote.body) {
         updateNote(tempNoteText);
       }
     }, 500);
@@ -72,13 +71,6 @@ export default function App() {
   async function deleteNote(noteId) {
     const docRef = doc(db, "notes", noteId);
     await deleteDoc(docRef);
-  }
-  function findCurrentNote() {
-    return (
-      notes.find((note) => {
-        return note.id === currentNoteId;
-      }) || notes[0]
-    );
   }
 
   return (
